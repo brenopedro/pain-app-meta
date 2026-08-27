@@ -1,0 +1,4 @@
+[submodule "microsservices/monitoring"]
+	path = microsservices/monitoring
+	url = https://github.com/brenopedro/pain-monitoring-service.git
+	branch = main
