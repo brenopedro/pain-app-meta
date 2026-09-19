@@ -76,7 +76,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MenstruationCycleOutput"
+                $ref: "#/components/schemas/MenstruationCycleSummaryOutput"
         400:
           $ref: "#/components/responses/BadRequest"
         422:
@@ -84,6 +84,30 @@ paths:
         500:
           $ref: "#/components/responses/InternalError"
   /api/v1/health/menstruation-cycle/{menstruationCycleId}:
+    get:
+      description: Get menstruation cycle
+      parameters:
+        - schema:
+            type: string
+          name: menstruationCycleId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        200:
+          description: Menstruation cycle retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenstruationCycleOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
     put:
       description: Update menstruation cycle
       parameters:
@@ -107,13 +131,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MenstruationCycleOutput"
+                $ref: "#/components/schemas/MenstruationCycleSummaryOutput"
         400:
           $ref: "#/components/responses/BadRequest"
         404:
           $ref: "#/components/responses/NotFound"
-        409:
-          $ref: "#/components/responses/Conflict"
         422:
           $ref: "#/components/responses/UnprocessableEntity"
         500:
@@ -136,42 +158,105 @@ paths:
           $ref: "#/components/responses/NotFound"
         500:
           $ref: "#/components/responses/InternalError"
-
-    get:
-      description: List customers
+  /api/v1/health/medical-condition:
+    post:
+      description: Register medical condition
       tags:
-        - Customers
-      parameters:
-        - schema:
-            type: string
-            example: "12345"
-          in: query
-          name: document
-          required: false
-        - schema:
-            type: string
-            example: "johndoe@email.com"
-          in: query
-          name: email
-          required: false
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/size"
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/direction"
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicalConditionInput"
       responses:
-        200:
-          description: Ok
+        201:
+          description: Medical condition registered
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/Page"
-                  - type: object
-                properties:
-                  content:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/CustomerSummary"
+                $ref: "#/components/schemas/MedicalConditionSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+  /api/v1/health/medical-condition/{medicalConditionId}:
+    get:
+      description: Get medical condition
+      parameters:
+        - schema:
+            type: string
+          name: medicalConditionId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        200:
+          description: Medical condition retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalConditionOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
+    put:
+      description: Update medical condition
+      parameters:
+        - schema:
+            type: string
+          name: medicalConditionId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicalConditionInput"
+      responses:
+        200:
+          description: Medical condition updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalConditionSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+    delete:
+      description: Delete medical condition
+      parameters:
+        - schema:
+            type: string
+          name: medicalConditionId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        204:
+          description: Medical condition deleted
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
 
 
 components:
@@ -286,9 +371,50 @@ components:
     MenstruationCycleOutput:
       type: object
       required:
+        - id
+        - startDate
+        - endDate
+        - onGoing
+        - notes
+        - duration
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+        duration:
+          type: string
+          example: "14D"
+          nullable: true
+    MenstruationCycleSummaryOutput:
+      type: object
+      required:
+        - id
         - startDate
         - description
       properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
         startDate:
           type: string
           example: "31-12-1990"
@@ -302,6 +428,98 @@ components:
           type: string
           example: "Day of Cycle"
           nullable: false
+    MedicalConditionInput:
+      type: object
+      required:
+        - name
+        - startDate
+        - onGoing
+      properties:
+        name:
+          type: string
+          example: "Endometriose"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+    MedicalConditionOutput:
+      type: object
+      required:
+        - id
+        - name
+        - startDate
+        - endDate
+        - onGoing
+        - notes
+        - duration
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+          nullable: false
+        name:
+          type: string
+          example: "Endometriose"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+        duration:
+          type: string
+          example: "14D"
+          nullable: true
+    MedicalConditionSummaryOutput:
+      type: object
+      required:
+        - id
+        - name
+        - startDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+        name:
+          type: string
+          example: "Endometriose"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        duration:
+          type: string
+          example: "14D"
+          nullable: true
 
 
     Address:
