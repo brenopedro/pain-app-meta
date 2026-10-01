@@ -1,4 +1,4 @@
-openapi: 3.0.4
+openapi: 3.1.4
 
 info:
   title: AlgaShop - Ordering
@@ -11,6 +11,20 @@ servers:
     url: "https://api.monitoring.com"
 
 paths:
+  /api/v1/health:
+    get:
+      description: Get all health data
+      tags:
+        - Health
+      responses:
+        200:
+          description: Health data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthOutput"
+        500:
+          $ref: "#/components/responses/InternalError"
   /api/v1/health/gender:
     post:
       description: Register gender
@@ -257,7 +271,204 @@ paths:
           $ref: "#/components/responses/NotFound"
         500:
           $ref: "#/components/responses/InternalError"
-
+  /api/v1/health/treatment:
+    post:
+      description: Register treatment
+      tags:
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreatmentInput"
+      responses:
+        201:
+          description: Treatment registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreatmentSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+  /api/v1/health/treatment/{treatmentId}:
+    get:
+      description: Get treatment
+      parameters:
+        - schema:
+            type: string
+          name: treatmentId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        200:
+          description: Treatment retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreatmentOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
+    put:
+      description: Update treatment
+      parameters:
+        - schema:
+            type: string
+          name: treatmentId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TreatmentInput"
+      responses:
+        200:
+          description: Treatment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TreatmentSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+    delete:
+      description: Delete treatment
+      parameters:
+        - schema:
+            type: string
+          name: treatmentId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        204:
+          description: Treatment deleted
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
+  /api/v1/health/other-event:
+    post:
+      description: Register other event
+      tags:
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtherEventInput"
+      responses:
+        201:
+          description: Other event registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEventSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+  /api/v1/health/other-event/{otherEventId}:
+    get:
+      description: Get other event
+      parameters:
+        - schema:
+            type: string
+          name: otherEventId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        200:
+          description: Other event retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEventOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
+    put:
+      description: Other event treatment
+      parameters:
+        - schema:
+            type: string
+          name: otherEventId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OtherEventInput"
+      responses:
+        200:
+          description: Other event updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OtherEventSummaryOutput"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        404:
+          $ref: "#/components/responses/NotFound"
+        422:
+          $ref: "#/components/responses/UnprocessableEntity"
+        500:
+          $ref: "#/components/responses/InternalError"
+    delete:
+      description: Delete other event
+      parameters:
+        - schema:
+            type: string
+          name: otherEventId
+          in: path
+          required: true
+          example: '6e148bd5-47f6-4022-b9da-07cfaa294f7a'
+      tags:
+        - Health
+      responses:
+        204:
+          description: Treatment deleted
+        404:
+          $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/InternalError"
 
 components:
   parameters:
@@ -321,6 +532,45 @@ components:
           schema:
             $ref: "#/components/schemas/ProblemDetail"
   schemas:
+    HealthOutput:
+      type: object
+      required:
+        - id
+        - gender
+        - dayOfBirth
+        - menstruationCycles
+        - medicalConditions
+        - treatments
+        - otherEvents
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+          nullable: false
+        gender:
+          type: string
+          example: "CISMALE"
+        dayOfBirth:
+          type: string
+          format: dateTime
+          example: "31-12-1990"
+        menstruationCycles:
+          type: array
+          items:
+            $ref: "#/components/schemas/MenstruationCycleSummaryOutput"
+        medicalConditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/MedicalConditionSummaryOutput"
+        treatments:
+          type: array
+          items:
+            $ref: "#/components/schemas/TreatmentSummaryOutput"
+        otherEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/OtherEventSummaryOutput"
     GenderData:
       type: object
       required:
@@ -424,6 +674,10 @@ components:
           type: string
           example: "14D"
           nullable: true
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
         description:
           type: string
           example: "Day of Cycle"
@@ -520,6 +774,229 @@ components:
           type: string
           example: "14D"
           nullable: true
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+    TreatmentInput:
+      type: object
+      required:
+        - medication
+        - startDate
+        - onGoing
+      properties:
+        medication:
+          $ref: "#/components/schemas/Medication"
+        strength:
+          type: integer
+          example: 50
+          nullable: true
+        unit:
+          type: string
+          example: mg
+          nullable: true
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+    TreatmentOutput:
+      type: object
+      required:
+        - id
+        - medication
+        - strength
+        - unit
+        - startDate
+        - endDate
+        - onGoing
+        - notes
+        - duration
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+          nullable: false
+        medication:
+          $ref: "#/components/schemas/Medication"
+        strength:
+          type: integer
+          example: 50
+          nullable: true
+        unit:
+          type: string
+          example: mg
+          nullable: true
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+        duration:
+          type: string
+          example: "14D"
+          nullable: true
+    TreatmentSummaryOutput:
+      type: object
+      required:
+        - id
+        - medication
+        - startDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+        medication:
+          $ref: "#/components/schemas/Medication"
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        duration:
+          type: string
+          example: "14D"
+          nullable: truetrue
+    OtherEventInput:
+      type: object
+      required:
+        - summary
+        - startDate
+        - onGoing
+      properties:
+        summary:
+          type: string
+          example: "Diarreia"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+    OtherEventOutput:
+      type: object
+      required:
+        - id
+        - summary
+        - startDate
+        - endDate
+        - onGoing
+        - notes
+        - duration
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+          nullable: false
+        medication:
+          type: string
+          example: "Diarreia"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        endDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        notes:
+          type: string
+          example: "Some notes"
+        duration:
+          type: string
+          example: "14D"
+          nullable: true
+    OtherEventSummaryOutput:
+      type: object
+      required:
+        - id
+        - summary
+        - startDate
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+        summary:
+          type: string
+          example: "Diarreia"
+          nullable: false
+        startDate:
+          type: string
+          example: "31-12-1990"
+          format: date
+          nullable: false
+        onGoing:
+          type: boolean
+          example: true
+          nullable: false
+        duration:
+          type: string
+          example: "14D"
+          nullable: truetrue
+    Medication:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6e148bd5-47f6-4022-b9da-07cfaa294f7a"
+          nullable: false
+        name:
+          type: string
+          example: "Amitril"
+          nullable: false
 
 
     Address:
